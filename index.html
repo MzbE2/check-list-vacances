@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#2BB7C4" />
+<title>En route ! — Notre check-list vacances</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sea:#2BB7C4; --sea-deep:#1A8C99;
+    --sun:#FFC93C; --coral:#FF7A6B;
+    --mint:#3FB984; --mint-deep:#2E9E70;
+    --ink:#163B53; --ink-soft:#4A6377;
+    --sand:#FFF8EE; --card:#FFFFFF;
+    --line:#ECE4D6; --line-soft:#F2EADD;
+    --shadow:0 6px 22px rgba(22,59,83,.10);
+    --shadow-sm:0 2px 8px rgba(22,59,83,.08);
+    --radius:18px; --radius-sm:12px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Nunito",system-ui,-apple-system,sans-serif;
+    color:var(--ink); background:var(--sand);
+    min-height:100vh; line-height:1.45;
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  .wrap{max-width:600px;margin:0 auto;}
+  h1,h2,h3{font-family:"Fredoka",sans-serif;font-weight:600;margin:0;}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;}
+  input{font-family:inherit;}
+
+  /* ---------- HEADER / CIEL ---------- */
+  header.sky{
+    position:relative; overflow:hidden; color:#fff;
+    background:linear-gradient(160deg,#FFD27A 0%,#FF9E7A 28%,#39B6C7 100%);
+    padding:calc(env(safe-area-inset-top) + 14px) 18px 0;
+  }
+  .sun{position:absolute;top:-26px;right:-26px;width:130px;height:130px;pointer-events:none;opacity:.92;}
+  .sun .rays{transform-origin:50% 50%;animation:spin 60s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;position:relative;z-index:2;}
+  .brand{display:flex;align-items:center;gap:8px;font-family:"Fredoka";font-weight:600;font-size:20px;letter-spacing:.2px;text-shadow:0 1px 6px rgba(20,40,60,.18);}
+  .brand .plane{font-size:20px;display:inline-block;animation:bob 4s ease-in-out infinite;}
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(-4deg);}50%{transform:translateY(-3px) rotate(2deg);}}
+  .acct{display:flex;align-items:center;gap:8px;}
+  .acct .av{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.35);border:1.5px solid rgba(255,255,255,.7);display:grid;place-items:center;font-weight:800;font-size:13px;overflow:hidden;}
+  .acct .av img{width:100%;height:100%;object-fit:cover;}
+  .btn-ghost{color:#fff;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.4);padding:7px 12px;border-radius:999px;font-weight:700;font-size:13px;backdrop-filter:blur(4px);}
+  .btn-ghost:active{transform:scale(.96);}
+
+  .hero{position:relative;z-index:2;padding:12px 2px 4px;}
+  .love{font-family:"Fredoka";font-weight:500;font-size:22px;line-height:1.2;text-shadow:0 1px 8px rgba(20,40,60,.22);min-height:27px;}
+  .heroRow{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:12px;}
+  .weather{display:flex;align-items:center;gap:9px;}
+  .weather .ico{font-size:30px;line-height:1;filter:drop-shadow(0 1px 4px rgba(20,40,60,.25));}
+  .weather .temp{font-family:"Fredoka";font-weight:600;font-size:24px;line-height:1;}
+  .weather .meta{font-size:12px;opacity:.95;font-weight:700;}
+  .countdown{text-align:right;}
+  .countdown .chip{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.45);padding:6px 11px;border-radius:999px;font-weight:800;font-size:13px;cursor:pointer;}
+  .countdown .chip:active{transform:scale(.96);}
+  .countdown .big{font-family:"Fredoka";font-weight:600;font-size:18px;}
+
+  .progressHero{position:relative;z-index:2;margin-top:14px;}
+  .progressHero .lbl{display:flex;justify-content:space-between;font-size:12.5px;font-weight:800;opacity:.96;margin-bottom:5px;}
+  .bar{height:9px;border-radius:999px;background:rgba(255,255,255,.3);overflow:hidden;}
+  .bar > i{display:block;height:100%;border-radius:999px;background:#fff;width:0;transition:width .5s cubic-bezier(.2,.8,.2,1);}
+
+  .waves{display:block;width:100%;height:34px;margin-top:10px;position:relative;z-index:1;}
+  .waves use{animation:drift 9s linear infinite;}
+  .waves use:nth-child(2){animation-duration:13s;opacity:.5;}
+  @keyframes drift{from{transform:translateX(0);}to{transform:translateX(-90px);}}
+
+  /* ---------- BARRE OUTILS ---------- */
+  .tools{padding:14px 16px 4px;display:flex;gap:10px;align-items:center;}
+  .search{flex:1;display:flex;align-items:center;gap:8px;background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:9px 14px;box-shadow:var(--shadow-sm);}
+  .search input{border:none;outline:none;width:100%;font-size:15px;color:var(--ink);background:transparent;}
+  .search input::placeholder{color:#A9B6BF;}
+  .toggleTodo{display:flex;align-items:center;gap:7px;background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:9px 13px;font-weight:800;font-size:13px;color:var(--ink-soft);box-shadow:var(--shadow-sm);white-space:nowrap;}
+  .toggleTodo.on{background:var(--mint);border-color:var(--mint);color:#fff;}
+  .toggleTodo .dot{width:9px;height:9px;border-radius:50%;background:#C8D2D8;}
+  .toggleTodo.on .dot{background:#fff;}
+
+  /* ---------- ONGLETS ---------- */
+  .tabsScroll{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:12px 16px 4px;}
+  .tabsScroll::-webkit-scrollbar{display:none;}
+  .tabs{display:flex;gap:9px;width:max-content;}
+  .tab{display:flex;align-items:center;gap:7px;background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:9px 14px;font-weight:800;font-size:14px;color:var(--ink-soft);box-shadow:var(--shadow-sm);transition:transform .12s;white-space:nowrap;}
+  .tab:active{transform:scale(.95);}
+  .tab .em{font-size:16px;}
+  .tab .cnt{font-size:11.5px;font-weight:800;background:var(--line-soft);color:var(--ink-soft);border-radius:999px;padding:1px 7px;min-width:20px;text-align:center;}
+  .tab.active{color:#fff;border-color:transparent;box-shadow:0 6px 16px rgba(22,59,83,.18);}
+  .tab.active .cnt{background:rgba(255,255,255,.3);color:#fff;}
+  .tab.alldone::after{content:"✓";font-weight:900;margin-left:1px;}
+  .tab.add{font-size:18px;font-weight:700;color:var(--sea-deep);border-style:dashed;padding:9px 15px;}
+
+  /* ---------- PANNEAU CATÉGORIE ---------- */
+  main{padding:6px 16px 40px;}
+  .catHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 2px 10px;}
+  .catTitle{display:flex;align-items:center;gap:10px;}
+  .catTitle .bubble{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-size:22px;box-shadow:var(--shadow-sm);}
+  .catTitle h2{font-size:21px;}
+  .catTitle .sub{font-size:12.5px;color:var(--ink-soft);font-weight:700;}
+  .catMenu{display:flex;gap:6px;}
+  .iconbtn{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--card);border:1.5px solid var(--line);color:var(--ink-soft);font-size:15px;box-shadow:var(--shadow-sm);}
+  .iconbtn:active{transform:scale(.92);}
+
+  .catProgress{height:7px;border-radius:999px;background:var(--line-soft);overflow:hidden;margin:0 2px 14px;}
+  .catProgress > i{display:block;height:100%;border-radius:999px;width:0;transition:width .45s cubic-bezier(.2,.8,.2,1);}
+
+  ul.items{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px;}
+  li.item{display:flex;align-items:flex-start;gap:12px;background:var(--card);border:1.5px solid var(--line);border-radius:var(--radius);padding:13px 14px;box-shadow:var(--shadow-sm);transition:border-color .2s,background .2s,transform .1s;}
+  li.item.ready{background:#F3FBF6;border-color:#CDEBDA;}
+  li.item:active{transform:scale(.995);}
+  .check{flex:0 0 auto;width:28px;height:28px;border-radius:9px;border:2.5px solid #D2DCE2;background:#fff;display:grid;place-items:center;margin-top:1px;transition:all .18s;color:#fff;font-size:16px;font-weight:900;}
+  li.item.ready .check{background:var(--mint);border-color:var(--mint);transform:scale(1.04);}
+  .check svg{width:16px;height:16px;opacity:0;transform:scale(.5);transition:.18s;}
+  li.item.ready .check svg{opacity:1;transform:scale(1);}
+  .itemBody{flex:1;min-width:0;}
+  .itemName{font-weight:800;font-size:15.5px;color:var(--ink);word-wrap:break-word;}
+  li.item.ready .itemName{color:var(--mint-deep);}
+  .itemNote{font-size:12.5px;color:var(--ink-soft);font-weight:600;margin-top:2px;}
+  .itemMeta{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px;}
+  .badge{font-size:11px;font-weight:800;padding:3px 9px;border-radius:999px;display:inline-flex;align-items:center;gap:4px;}
+  .badge.dup{background:#FFF1E8;color:#C85A36;border:1px solid #FAD8C4;}
+  .badge.who{background:#EAF1FB;color:#3B63B8;border:1px solid #D6E2F7;}
+  .itemActions{display:flex;flex-direction:column;gap:6px;align-items:center;}
+  .minibtn{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--sand);color:var(--ink-soft);font-size:14px;border:1px solid var(--line);}
+  .minibtn:active{transform:scale(.9);}
+  .minibtn.del:active{background:#FDECEC;color:#D9534F;}
+
+  .addItem{margin-top:12px;display:flex;gap:9px;}
+  .addItem .add{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--card);border:2px dashed var(--line);border-radius:var(--radius);padding:13px;font-weight:800;color:var(--sea-deep);font-size:15px;}
+  .addItem .add:active{transform:scale(.98);background:#F5FBFC;}
+  .checkall{flex:0 0 auto;background:var(--card);border:1.5px solid var(--line);border-radius:var(--radius);padding:13px 14px;font-weight:800;color:var(--ink-soft);font-size:13.5px;box-shadow:var(--shadow-sm);}
+
+  .empty{text-align:center;color:var(--ink-soft);padding:34px 16px;font-weight:700;}
+  .empty .big{font-size:42px;display:block;margin-bottom:8px;}
+
+  /* ---------- BANNIÈRE MODE ---------- */
+  .syncbar{margin:12px 16px 0;background:#FFF6E6;border:1.5px solid #F6E2B8;color:#8A6A22;border-radius:14px;padding:10px 13px;font-size:12.5px;font-weight:700;display:flex;gap:9px;align-items:center;}
+  .syncbar.ok{background:#EFFAF3;border-color:#CBEBD7;color:#2E7D52;}
+  .syncbar .x{margin-left:auto;font-weight:900;opacity:.6;padding:0 4px;}
+
+  /* ---------- MODALE ---------- */
+  .overlay{position:fixed;inset:0;background:rgba(22,59,83,.45);backdrop-filter:blur(2px);display:none;align-items:flex-end;justify-content:center;z-index:50;}
+  .overlay.show{display:flex;}
+  .sheet{background:var(--sand);width:100%;max-width:600px;border-radius:24px 24px 0 0;padding:20px 18px calc(22px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px rgba(0,0,0,.25);animation:rise .28s cubic-bezier(.2,.8,.2,1);}
+  @keyframes rise{from{transform:translateY(100%);}to{transform:translateY(0);}}
+  .sheet h3{font-size:20px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .field{margin-bottom:13px;}
+  .field label{display:block;font-size:12.5px;font-weight:800;color:var(--ink-soft);margin-bottom:6px;}
+  .field input{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;font-size:16px;color:var(--ink);background:#fff;outline:none;}
+  .field input:focus{border-color:var(--sea);}
+  .emojiRow{display:flex;flex-wrap:wrap;gap:8px;}
+  .emojiRow button{width:46px;height:46px;border-radius:12px;background:#fff;border:1.5px solid var(--line);font-size:22px;}
+  .emojiRow button.sel{border-color:var(--sea);background:#E9F8FA;transform:scale(1.05);}
+  .sheetBtns{display:flex;gap:10px;margin-top:8px;}
+  .sheetBtns button{flex:1;padding:14px;border-radius:14px;font-weight:800;font-size:15.5px;}
+  .btn-primary{background:var(--sea);color:#fff;box-shadow:0 6px 16px rgba(43,183,196,.35);}
+  .btn-primary:active{transform:scale(.98);}
+  .btn-cancel{background:#fff;color:var(--ink-soft);border:1.5px solid var(--line);}
+  .btn-danger{background:#FCEAEA;color:#D9534F;border:1.5px solid #F3CFCF;}
+
+  /* ---------- CONNEXION ---------- */
+  .signin{position:fixed;inset:0;z-index:60;background:linear-gradient(165deg,#FFD27A,#FF9E7A 35%,#39B6C7);display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;padding:28px;}
+  .signin.show{display:flex;}
+  .signin .logo{font-size:64px;animation:bob 4s ease-in-out infinite;}
+  .signin h2{font-size:30px;margin:10px 0 4px;text-shadow:0 2px 10px rgba(20,40,60,.25);}
+  .signin p{font-weight:700;opacity:.95;max-width:300px;margin:0 0 26px;}
+  .gbtn{display:inline-flex;align-items:center;gap:11px;background:#fff;color:#3c4043;border-radius:14px;padding:14px 22px;font-weight:800;font-size:16px;box-shadow:var(--shadow);}
+  .gbtn:active{transform:scale(.97);}
+  .gbtn svg{width:20px;height:20px;}
+  .signin small{margin-top:18px;opacity:.9;font-weight:700;font-size:12px;max-width:280px;}
+
+  .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 18px;border-radius:999px;font-weight:800;font-size:14px;z-index:80;opacity:0;pointer-events:none;transition:.25s;box-shadow:var(--shadow);}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70;}
+
+  @media (prefers-reduced-motion: reduce){
+    .sun .rays,.brand .plane,.signin .logo,.waves use{animation:none!important;}
+    *{transition:none!important;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="sky">
+    <svg class="sun" viewBox="0 0 100 100" aria-hidden="true">
+      <g class="rays" fill="#FFF6DA">
+        <circle cx="50" cy="50" r="22" fill="#FFE9A8"/>
+        <g stroke="#FFF6DA" stroke-width="4" stroke-linecap="round">
+          <line x1="50" y1="6" x2="50" y2="18"/><line x1="50" y1="82" x2="50" y2="94"/>
+          <line x1="6" y1="50" x2="18" y2="50"/><line x1="82" y1="50" x2="94" y2="50"/>
+          <line x1="19" y1="19" x2="28" y2="28"/><line x1="72" y1="72" x2="81" y2="81"/>
+          <line x1="81" y1="19" x2="72" y2="28"/><line x1="28" y1="72" x2="19" y2="81"/>
+        </g>
+      </g>
+    </svg>
+
+    <div class="topbar">
+      <div class="brand"><span class="plane">✈️</span><span>En route&nbsp;!</span></div>
+      <div class="acct" id="acct"></div>
+    </div>
+
+    <div class="hero">
+      <div class="love" id="love">Bonjour&nbsp;!</div>
+      <div class="heroRow">
+        <div class="weather" id="weather">
+          <span class="ico">🌤️</span>
+          <div><div class="temp">—°</div><div class="meta">Météo…</div></div>
+        </div>
+        <div class="countdown" id="countdown">
+          <button class="chip" id="cdBtn">📅 <span class="big" id="cdText">Départ ?</span></button>
+        </div>
+      </div>
+      <div class="progressHero">
+        <div class="lbl"><span>Tout est prêt&nbsp;?</span><span id="gProgTxt">0 / 0</span></div>
+        <div class="bar"><i id="gProgBar"></i></div>
+      </div>
+    </div>
+
+    <svg class="waves" viewBox="0 0 600 40" preserveAspectRatio="none" aria-hidden="true">
+      <defs><path id="w" d="M0,20 q45,-16 90,0 t90,0 t90,0 t90,0 t90,0 t90,0 t90,0 V40 H0 Z"/></defs>
+      <use href="#w" x="0" y="6" fill="rgba(255,248,238,.55)"/>
+      <use href="#w" x="0" y="12" fill="var(--sand)"/>
+    </svg>
+  </header>
+
+  <div id="syncbar"></div>
+
+  <div class="tools">
+    <div class="search">
+      <span aria-hidden="true">🔍</span>
+      <input id="search" type="search" placeholder="Chercher un article…" autocomplete="off"/>
+    </div>
+    <button class="toggleTodo" id="todoToggle"><span class="dot"></span>À préparer</button>
+  </div>
+
+  <div class="tabsScroll"><div class="tabs" id="tabs"></div></div>
+
+  <main id="main"></main>
+</div>
+
+<!-- Modale article -->
+<div class="overlay" id="itemOverlay">
+  <div class="sheet">
+    <h3 id="itemSheetTitle">✏️ Article</h3>
+    <div class="field"><label>Nom de l'article</label><input id="itemName" placeholder="Ex : Crème solaire" /></div>
+    <div class="field"><label>Note / quantité (optionnel)</label><input id="itemNote" placeholder="Ex : Haute protection, x2…" /></div>
+    <div class="sheetBtns">
+      <button class="btn-cancel" data-close>Annuler</button>
+      <button class="btn-primary" id="itemSave">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modale catégorie -->
+<div class="overlay" id="catOverlay">
+  <div class="sheet">
+    <h3 id="catSheetTitle">🎒 Nouvel onglet</h3>
+    <div class="field"><label>Nom de l'onglet</label><input id="catName" placeholder="Ex : Bébé, Camping, Apéro…" /></div>
+    <div class="field"><label>Choisis une icône</label><div class="emojiRow" id="emojiRow"></div></div>
+    <div class="sheetBtns" id="catBtns">
+      <button class="btn-cancel" data-close>Annuler</button>
+      <button class="btn-primary" id="catSave">Créer l'onglet</button>
+    </div>
+    <div class="sheetBtns" id="catDeleteRow" style="margin-top:10px;display:none;">
+      <button class="btn-danger" id="catDelete">🗑️ Supprimer cet onglet</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modale date départ -->
+<div class="overlay" id="dateOverlay">
+  <div class="sheet">
+    <h3>📅 Date du départ</h3>
+    <div class="field"><label>On part le…</label><input id="depDate" type="date" /></div>
+    <div class="sheetBtns">
+      <button class="btn-cancel" data-close>Annuler</button>
+      <button class="btn-primary" id="dateSave">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Écran de connexion -->
+<div class="signin" id="signin">
+  <div class="logo">🏖️</div>
+  <h2>En route&nbsp;!</h2>
+  <p>Notre check-list vacances, à deux et synchronisée.</p>
+  <button class="gbtn" id="googleBtn">
+    <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+    Continuer avec Google
+  </button>
+  <small id="signinNote">La synchro avec ton/ta partenaire s'active dès que Firebase est configuré.</small>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+/* =========================================================================
+   ⚙️  CONFIGURATION FIREBASE  — REMPLIS CE BLOC (voir les instructions)
+   Tant que les valeurs ci-dessous contiennent "TON_...", l'appli marche
+   en MODE LOCAL (données sur ce téléphone uniquement). Dès que tu colles
+   ta vraie config, l'authentification Google + la synchro s'activent.
+   ========================================================================= */
+const firebaseConfig = {
+  apiKey:            "TON_API_KEY",
+  authDomain:        "TON_PROJET.firebaseapp.com",
+  databaseURL:       "https://TON_PROJET-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:         "TON_PROJET",
+  storageBucket:     "TON_PROJET.appspot.com",
+  messagingSenderId: "TON_SENDER_ID",
+  appId:             "TON_APP_ID"
+};
+const SHARED_PATH = "checklist/foyer"; // chemin commun -> toi + ta femme voyez la même liste
+
+/* ========================= DONNÉES PAR DÉFAUT ============================ */
+const PALETTE = ["#3FB984","#2BB7C4","#FFC93C","#FF7A6B","#F4A23C","#6C8AE4","#B07BD9","#E8639B","#5BB8A0"];
+const EMOJIS = ["🎒","🥾","🚲","🏖️","👕","🍽️","💊","📄","⛺","🛶","🎣","🎮","🧴","🐶","👶","🍷","🎸","📷","🧗","🏄","🌊","🔦","🧺","🎲"];
+
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function mk(name,note){ return {id:uid(),name,note:note||"",ready:false,by:null}; }
+
+const SEED = {
+  departure:null,
+  categories:[
+    {id:uid(),emoji:"🥾",color:"#3FB984",name:"Randonnée & Extérieur",items:[
+      mk("Sac à dos rando","Prévu sur le post-it"),mk("Bâton de marche","Prévu sur le post-it"),
+      mk("Chaussures de rando / trail","Essentiel pour les marches"),mk("Gourdes / Camelbak"),
+      mk("Casquette / Chapeau"),mk("Crème solaire","Haute protection"),mk("Lunettes de soleil")]},
+    {id:uid(),emoji:"🚲",color:"#2BB7C4",name:"Vélo",items:[
+      mk("Porte-bébé vélo","Prévu sur le post-it"),mk("Antivol vélo","Prévu sur le post-it"),
+      mk("Pompe vélo","+ adaptateur voiture"),mk("Chambre à air + outils vélo","Prévu sur le post-it"),
+      mk("Casque vélo","Prévu sur le post-it"),mk("Vélos","À charger sur le porte-vélo")]},
+    {id:uid(),emoji:"🏖️",color:"#FFC93C",name:"Plage & Piscine",items:[
+      mk("Masque piscine","Prévu sur le post-it"),mk("Serviettes de piscine & foutas","Prévu sur le post-it"),
+      mk("Maillots de bain","Prévoir plusieurs (6 semaines)"),mk("Sac de plage"),
+      mk("Parasol / Tente de plage"),mk("Jeux de plage / Brassards"),
+      mk("Crème solaire","Haute protection"),mk("Lunettes de soleil")]},
+    {id:uid(),emoji:"👕",color:"#FF7A6B",name:"Vêtements & Linge",items:[
+      mk("Draps","Prévu sur le post-it"),mk("Un peu de lessive","Recharge / dépannage"),
+      mk("T-shirts / Débardeurs","1 à 2 semaines max (lavage sur place)"),mk("Shorts / Jupes / Robes"),
+      mk("Sous-vêtements & Chaussettes"),mk("Pulls / Gilets","Pour les soirées fraîches"),
+      mk("Pyjamas"),mk("Linge de toilette additionnel")]},
+    {id:uid(),emoji:"🍽️",color:"#F4A23C",name:"Cuisine & Pratique",items:[
+      mk("1 couteau + 1 économe","Cuisine de vacances"),mk("Glacière / Pains de glace"),
+      mk("Sacs poubelle / Éponges / Liquide vaisselle"),mk("Sac cabas pour les courses"),
+      mk("Boîtes hermétiques","Pique-nique")]},
+    {id:uid(),emoji:"💊",color:"#6C8AE4",name:"Pharmacie & Toilette",items:[
+      mk("Tulle gras / Pansements","Prévu sur le post-it"),mk("Trousse de premiers secours","Désinfectant, compresses"),
+      mk("Paracétamol / Anti-inflammatoires"),mk("Anti-moustique","Spray + apaisant"),
+      mk("Brosses à dents & Dentifrice"),mk("Gel douche & Shampoing")]},
+    {id:uid(),emoji:"📄",color:"#B07BD9",name:"Papiers & Loisirs",items:[
+      mk("Tickets manège Sanary","Prévu sur le post-it"),mk("Cartes d'identité / Passeports","Vérifier la validité"),
+      mk("Permis & Papiers du véhicule"),mk("Cartes vitale & Mutuelle"),
+      mk("Livres / Liseuse / Jeux de société")]}
+  ]
+};
+
+const LOVE = ["Je t'aime","On va passer une belle journée","Toi, moi et la route","Hâte d'y être, avec toi",
+  "T'es ma personne préférée","Prêts pour l'aventure ?","On forme une sacrée équipe","Vivement les vacances, à deux",
+  "Tu me rends heureux","Merci d'être là","Cap sur le soleil, ensemble","Le meilleur des voyages, c'est avec toi",
+  "Un café et c'est parti ?","Encore une aventure qui commence","J'ai de la chance de t'avoir","Direction les souvenirs",
+  "Plus que quelques cases avant le grand départ","On coche tout et on file","À deux, tout est plus simple","Ce sera un bel été"];
+
+/* ============================ STOCKAGE ================================== */
+const FB_OK = !firebaseConfig.apiKey.startsWith("TON_");
+let fb = {enabled:false, db:null, ref:null, set:null, auth:null};
+let state = clone(SEED);
+let user = null;
+let saveTimer = null;
+
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+function lsGet(k){ try{return localStorage.getItem(k);}catch(e){return null;} }
+function lsSet(k,v){ try{localStorage.setItem(k,v);}catch(e){} }
+
+function loadLocal(){
+  const raw = lsGet("checklist-vacances");
+  if(raw){ try{ state = JSON.parse(raw); }catch(e){} }
+}
+function persist(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(()=>{
+    if(fb.enabled && fb.ref){ fb.set(fb.ref, state).catch(()=>{}); }
+    else { lsSet("checklist-vacances", JSON.stringify(state)); }
+  }, 250);
+}
+
+async function initFirebase(){
+  if(!FB_OK) return false;
+  try{
+    const [{initializeApp},auth,db] = await Promise.all([
+      import("https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js"),
+      import("https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js"),
+      import("https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js")
+    ]);
+    const app = initializeApp(firebaseConfig);
+    fb.auth = auth.getAuth(app);
+    const database = db.getDatabase(app);
+    fb.ref = db.ref(database, SHARED_PATH);
+    fb.set = db.set;
+    fb.enabled = true;
+
+    // Connexion Google
+    document.getElementById("googleBtn").onclick = async ()=>{
+      const prov = new auth.GoogleAuthProvider();
+      try{ await auth.signInWithPopup(fb.auth, prov); }
+      catch(e){ try{ await auth.signInWithRedirect(fb.auth, prov);}catch(_){ toast("Connexion impossible"); } }
+    };
+    auth.getRedirectResult(fb.auth).catch(()=>{});
+
+    // Sync temps réel
+    db.onValue(fb.ref, (snap)=>{
+      const v = snap.val();
+      if(v && v.categories){ state = v; renderAll(); }
+      else if(user){ fb.set(fb.ref, state).catch(()=>{}); } // 1ère fois : on pousse le seed
+    });
+
+    // État de connexion
+    auth.onAuthStateChanged(fb.auth, (u)=>{
+      user = u ? {name:u.displayName||u.email, email:u.email, photo:u.photoURL, initial:(u.displayName||u.email||"?")[0].toUpperCase()} : null;
+      document.getElementById("signin").classList.toggle("show", !u);
+      renderAccount(); 
+    });
+    return true;
+  }catch(e){ console.warn("Firebase off:",e); return false; }
+}
+
+/* ============================ DOUBLONS ================================== */
+const STOP = new Set(["de","du","des","la","le","les","l","d","a","au","aux","et","ou","un","une","en","pour","sur","x","x2","x3"]);
+function tokens(name){
+  return name.toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/[^a-z0-9\s]/g," ").split(/\s+/)
+    .map(w=>w.replace(/s$/,"")).filter(w=>w && !STOP.has(w));
+}
+function isDup(aTok,bTok){
+  const small = aTok.length<=bTok.length?aTok:bTok;
+  const big = aTok.length<=bTok.length?bTok:aTok;
+  if(small.length===0) return false;
+  const subset = small.every(t=>big.includes(t));
+  if(!subset) return false;
+  return small.length>=2 || (small.length===1 && big.length===1);
+}
+function duplicatesFor(item, catId){
+  const aTok = tokens(item.name);
+  const found = [];
+  for(const c of state.categories){
+    if(c.id===catId) continue;
+    for(const it of c.items){
+      if(isDup(aTok, tokens(it.name))){ found.push(c); break; }
+    }
+  }
+  return found;
+}
+
+/* ============================ RENDU ==================================== */
+let activeCat = state.categories[0] ? state.categories[0].id : null;
+let onlyTodo = false;
+let searchQ = "";
+
+function catProgress(c){ const t=c.items.length, d=c.items.filter(i=>i.ready).length; return {t,d}; }
+function globalProgress(){ let t=0,d=0; state.categories.forEach(c=>{t+=c.items.length; d+=c.items.filter(i=>i.ready).length;}); return {t,d}; }
+
+function renderAccount(){
+  const el = document.getElementById("acct");
+  if(user){
+    el.innerHTML = `<div class="av">${user.photo?`<img src="${user.photo}" alt="">`:user.initial}</div>
+      <button class="btn-ghost" id="logout">Quitter</button>`;
+    document.getElementById("logout").onclick = ()=>{ if(fb.auth) fb.auth.signOut(); };
+  }else if(fb.enabled){
+    el.innerHTML = `<button class="btn-ghost" id="loginTop">Se connecter</button>`;
+    document.getElementById("loginTop").onclick = ()=>document.getElementById("signin").classList.add("show");
+  }else{
+    el.innerHTML = `<span class="btn-ghost" style="cursor:default">Mode local</span>`;
+  }
+}
+
+function renderLove(){
+  let last = lsGet("lastLove");
+  let pick = LOVE[Math.floor(Math.random()*LOVE.length)];
+  let guard=0; while(pick===last && guard++<6) pick = LOVE[Math.floor(Math.random()*LOVE.length)];
+  lsSet("lastLove", pick);
+  document.getElementById("love").textContent = pick + " 💛";
+}
+
+function renderCountdown(){
+  const el = document.getElementById("cdText");
+  if(state.departure){
+    const d = new Date(state.departure+"T00:00:00");
+    const today = new Date(); today.setHours(0,0,0,0);
+    const days = Math.round((d-today)/86400000);
+    if(days>1) el.textContent = "J-"+days;
+    else if(days===1) el.textContent = "Demain !";
+    else if(days===0) el.textContent = "C'est parti !";
+    else el.textContent = "En vacances 🎉";
+  }else el.textContent = "Départ ?";
+}
+
+function renderGlobal(){
+  const {t,d} = globalProgress();
+  document.getElementById("gProgTxt").textContent = `${d} / ${t} prêts`;
+  document.getElementById("gProgBar").style.width = t? (d/t*100)+"%" : "0%";
+}
+
+function renderTabs(){
+  const wrap = document.getElementById("tabs");
+  wrap.innerHTML = "";
+  state.categories.forEach(c=>{
+    const {t,d} = catProgress(c);
+    const b = document.createElement("button");
+    b.className = "tab"+(c.id===activeCat?" active":"")+(t>0&&d===t?" alldone":"");
+    if(c.id===activeCat) b.style.background = c.color;
+    b.innerHTML = `<span class="em">${c.emoji}</span>${c.name}<span class="cnt">${d}/${t}</span>`;
+    b.onclick = ()=>{ activeCat=c.id; renderTabs(); renderMain(); };
+    wrap.appendChild(b);
+  });
+  const add = document.createElement("button");
+  add.className="tab add"; add.textContent="＋"; add.title="Ajouter un onglet";
+  add.onclick = ()=>openCat();
+  wrap.appendChild(add);
+}
+
+function renderMain(){
+  const main = document.getElementById("main");
+  const c = state.categories.find(x=>x.id===activeCat);
+  if(!c){ main.innerHTML = `<div class="empty"><span class="big">🧳</span>Aucun onglet. Crée le premier avec ＋</div>`; return; }
+  const {t,d} = catProgress(c);
+  let list = c.items;
+  if(onlyTodo) list = list.filter(i=>!i.ready);
+  if(searchQ) list = list.filter(i=>i.name.toLowerCase().includes(searchQ) || (i.note||"").toLowerCase().includes(searchQ));
+
+  main.innerHTML = `
+    <div class="catHead">
+      <div class="catTitle">
+        <div class="bubble" style="background:${c.color}22;">${c.emoji}</div>
+        <div><h2>${c.name}</h2><div class="sub">${d} prêt${d>1?"s":""} sur ${t}</div></div>
+      </div>
+      <div class="catMenu">
+        <button class="iconbtn" id="editCat" title="Renommer">✏️</button>
+      </div>
+    </div>
+    <div class="catProgress"><i style="width:${t?d/t*100:0}%;background:${c.color}"></i></div>
+    <ul class="items" id="itemList"></ul>
+    <div class="addItem">
+      <button class="add" id="addItemBtn">＋ Ajouter un article</button>
+      <button class="checkall" id="checkAll">${t&&d===t?"Tout décocher":"Tout cocher ✓"}</button>
+    </div>`;
+
+  const ul = document.getElementById("itemList");
+  if(list.length===0){
+    ul.innerHTML = `<div class="empty"><span class="big">${searchQ?"🔍":onlyTodo?"🎉":"📭"}</span>${searchQ?"Aucun article trouvé":onlyTodo?"Tout est prêt ici !":"Onglet vide — ajoute un article"}</div>`;
+  }
+  list.forEach(it=>{
+    const dups = duplicatesFor(it, c.id);
+    const li = document.createElement("li");
+    li.className = "item"+(it.ready?" ready":"");
+    li.innerHTML = `
+      <button class="check" aria-label="Prêt">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+      </button>
+      <div class="itemBody">
+        <div class="itemName">${esc(it.name)}</div>
+        ${it.note?`<div class="itemNote">${esc(it.note)}</div>`:""}
+        ${(dups.length||(it.ready&&it.by))?`<div class="itemMeta">
+          ${dups.length?`<span class="badge dup">🔁 aussi dans ${dups.map(d=>esc(d.name)).join(", ")}</span>`:""}
+          ${it.ready&&it.by?`<span class="badge who">✓ ${esc(it.by)}</span>`:""}
+        </div>`:""}
+      </div>
+      <div class="itemActions">
+        <button class="minibtn edit" title="Modifier">✏️</button>
+        <button class="minibtn del" title="Supprimer">🗑️</button>
+      </div>`;
+    li.querySelector(".check").onclick = ()=>toggleReady(c.id, it.id);
+    li.querySelector(".edit").onclick = ()=>openItem(c.id, it);
+    li.querySelector(".del").onclick = ()=>delItem(c.id, it.id);
+    ul.appendChild(li);
+  });
+
+  document.getElementById("addItemBtn").onclick = ()=>openItem(c.id, null);
+  document.getElementById("editCat").onclick = ()=>openCat(c);
+  document.getElementById("checkAll").onclick = ()=>{
+    const all = t && d===t;
+    c.items.forEach(i=>{ i.ready=!all; i.by = (!all && user)?user.name:null; });
+    persist(); renderAll(); if(!all && c.items.length) celebrate();
+  };
+}
+
+function renderAll(){
+  if(!state.categories.find(x=>x.id===activeCat)) activeCat = state.categories[0]?.id || null;
+  renderTabs(); renderMain(); renderGlobal(); renderCountdown(); renderSyncbar();
+}
+
+function esc(s){ return (s||"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m])); }
+
+/* ============================ ACTIONS ================================== */
+function toggleReady(catId,itemId){
+  const c = state.categories.find(x=>x.id===catId); if(!c) return;
+  const it = c.items.find(i=>i.id===itemId); if(!it) return;
+  it.ready = !it.ready;
+  it.by = it.ready && user ? user.name : null;
+  persist();
+  const {t,d} = catProgress(c);
+  renderAll();
+  if(t>0 && d===t) celebrate();
+}
+function delItem(catId,itemId){
+  const c = state.categories.find(x=>x.id===catId); if(!c) return;
+  c.items = c.items.filter(i=>i.id!==itemId);
+  persist(); renderAll(); toast("Article supprimé");
+}
+
+/* Modale article */
+let itemCtx = {catId:null, item:null};
+function openItem(catId, item){
+  itemCtx = {catId, item};
+  document.getElementById("itemSheetTitle").textContent = item? "✏️ Modifier l'article" : "➕ Nouvel article";
+  document.getElementById("itemName").value = item? item.name : "";
+  document.getElementById("itemNote").value = item? (item.note||"") : "";
+  showOverlay("itemOverlay");
+  setTimeout(()=>document.getElementById("itemName").focus(),200);
+}
+document.getElementById("itemSave").onclick = ()=>{
+  const name = document.getElementById("itemName").value.trim();
+  if(!name){ toast("Donne un nom à l'article"); return; }
+  const note = document.getElementById("itemNote").value.trim();
+  const c = state.categories.find(x=>x.id===itemCtx.catId); if(!c) return;
+  if(itemCtx.item){ itemCtx.item.name=name; itemCtx.item.note=note; }
+  else { c.items.push(mk(name,note)); }
+  persist(); hideOverlay(); renderAll();
+};
+
+/* Modale catégorie */
+let catCtx = {cat:null, emoji:EMOJIS[0]};
+function openCat(cat){
+  catCtx = {cat:cat||null, emoji: cat?cat.emoji:EMOJIS[0]};
+  document.getElementById("catSheetTitle").textContent = cat? "✏️ Modifier l'onglet" : "🎒 Nouvel onglet";
+  document.getElementById("catSave").textContent = cat? "Enregistrer" : "Créer l'onglet";
+  document.getElementById("catName").value = cat? cat.name : "";
+  document.getElementById("catDeleteRow").style.display = cat? "flex":"none";
+  const row = document.getElementById("emojiRow"); row.innerHTML="";
+  EMOJIS.forEach(e=>{
+    const b=document.createElement("button"); b.textContent=e;
+    if(e===catCtx.emoji) b.classList.add("sel");
+    b.onclick=()=>{ catCtx.emoji=e; [...row.children].forEach(x=>x.classList.remove("sel")); b.classList.add("sel"); };
+    row.appendChild(b);
+  });
+  showOverlay("catOverlay");
+}
+document.getElementById("catSave").onclick = ()=>{
+  const name = document.getElementById("catName").value.trim();
+  if(!name){ toast("Donne un nom à l'onglet"); return; }
+  if(catCtx.cat){ catCtx.cat.name=name; catCtx.cat.emoji=catCtx.emoji; }
+  else {
+    const color = PALETTE[state.categories.length % PALETTE.length];
+    const nc = {id:uid(), emoji:catCtx.emoji, color, name, items:[]};
+    state.categories.push(nc); activeCat = nc.id;
+  }
+  persist(); hideOverlay(); renderAll();
+};
+document.getElementById("catDelete").onclick = ()=>{
+  if(!catCtx.cat) return;
+  if(state.categories.length<=1){ toast("Garde au moins un onglet"); return; }
+  state.categories = state.categories.filter(c=>c.id!==catCtx.cat.id);
+  activeCat = state.categories[0].id;
+  persist(); hideOverlay(); renderAll(); toast("Onglet supprimé");
+};
+
+/* Modale date */
+document.getElementById("cdBtn").onclick = ()=>{
+  document.getElementById("depDate").value = state.departure || "";
+  showOverlay("dateOverlay");
+};
+document.getElementById("dateSave").onclick = ()=>{
+  state.departure = document.getElementById("depDate").value || null;
+  persist(); hideOverlay(); renderCountdown();
+};
+
+/* Overlays */
+function showOverlay(id){ document.getElementById(id).classList.add("show"); }
+function hideOverlay(){ document.querySelectorAll(".overlay").forEach(o=>o.classList.remove("show")); }
+document.querySelectorAll(".overlay").forEach(o=>{
+  o.addEventListener("click",e=>{ if(e.target===o) hideOverlay(); });
+});
+document.querySelectorAll("[data-close]").forEach(b=>b.onclick=hideOverlay);
+
+/* Recherche & filtre */
+document.getElementById("search").addEventListener("input",e=>{ searchQ=e.target.value.trim().toLowerCase(); renderMain(); });
+document.getElementById("todoToggle").onclick = ()=>{
+  onlyTodo=!onlyTodo;
+  document.getElementById("todoToggle").classList.toggle("on",onlyTodo);
+  renderMain();
+};
+
+function renderSyncbar(){
+  const el = document.getElementById("syncbar");
+  if(fb.enabled && user){
+    el.innerHTML = `<div class="syncbar ok">🔗 Synchronisé — connecté en tant que ${esc(user.name)}.</div>`;
+  }else if(!fb.enabled){
+    el.innerHTML = `<div class="syncbar">📱 Mode local — les données restent sur cet appareil. <b>Configure Firebase</b> pour partager la liste avec ta femme.<span class="x" onclick="this.parentElement.remove()">✕</span></div>`;
+  }else el.innerHTML="";
+}
+
+/* ============================ MÉTÉO ==================================== */
+function wmo(code){
+  const m={0:["☀️","Ensoleillé"],1:["🌤️","Beau temps"],2:["⛅","Nuageux"],3:["☁️","Couvert"],
+    45:["🌫️","Brouillard"],48:["🌫️","Brouillard"],51:["🌦️","Bruine"],53:["🌦️","Bruine"],55:["🌦️","Bruine"],
+    61:["🌧️","Pluie"],63:["🌧️","Pluie"],65:["🌧️","Forte pluie"],66:["🌧️","Pluie"],67:["🌧️","Pluie"],
+    71:["🌨️","Neige"],73:["🌨️","Neige"],75:["❄️","Neige"],77:["❄️","Neige"],
+    80:["🌦️","Averses"],81:["🌧️","Averses"],82:["⛈️","Averses"],85:["🌨️","Neige"],86:["🌨️","Neige"],
+    95:["⛈️","Orage"],96:["⛈️","Orage"],99:["⛈️","Orage"]};
+  return m[code]||["🌤️","Météo"];
+}
+function loadWeather(){
+  const box = document.getElementById("weather");
+  if(!navigator.geolocation){ box.querySelector(".meta").textContent="Localisation off"; return; }
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    const {latitude:lat, longitude:lon} = pos.coords;
+    try{
+      const w = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code`).then(r=>r.json());
+      const t = Math.round(w.current.temperature_2m);
+      const [ico,label] = wmo(w.current.weather_code);
+      let city="";
+      try{
+        const g = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=fr`).then(r=>r.json());
+        city = g.city||g.locality||"";
+      }catch(e){}
+      box.innerHTML = `<span class="ico">${ico}</span><div><div class="temp">${t}°</div><div class="meta">${label}${city?" · "+esc(city):""}</div></div>`;
+    }catch(e){ box.querySelector(".meta").textContent="Météo indispo"; }
+  }, ()=>{ box.querySelector(".meta").textContent="Active la localisation"; }, {timeout:8000});
+}
+
+/* ============================ CONFETTIS ================================= */
+let confettiBusy=false;
+function celebrate(){
+  if(confettiBusy) return; confettiBusy=true;
+  if(window.matchMedia("(prefers-reduced-motion: reduce)").matches){ toast("Onglet complet 🎉"); confettiBusy=false; return; }
+  toast("Onglet prêt, bravo 🎉");
+  const cv=document.createElement("canvas"); cv.className="confetti"; document.body.appendChild(cv);
+  const ctx=cv.getContext("2d"); cv.width=innerWidth; cv.height=innerHeight;
+  const cols=["#FFC93C","#2BB7C4","#FF7A6B","#3FB984","#B07BD9","#fff"];
+  const N=110, P=[];
+  for(let i=0;i<N;i++)P.push({x:Math.random()*cv.width,y:-20-Math.random()*cv.height*.3,r:5+Math.random()*7,
+    c:cols[i%cols.length],vy:3+Math.random()*4,vx:-2+Math.random()*4,rot:Math.random()*6,vr:-.2+Math.random()*.4});
+  let frame=0;
+  (function loop(){
+    frame++; ctx.clearRect(0,0,cv.width,cv.height);
+    P.forEach(p=>{ p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr; p.vy+=.05;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot); ctx.fillStyle=p.c;
+      ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r*1.6); ctx.restore(); });
+    if(frame<140) requestAnimationFrame(loop);
+    else { cv.remove(); confettiBusy=false; }
+  })();
+}
+
+/* ============================== TOAST ================================== */
+let toastT=null;
+function toast(msg){
+  const el=document.getElementById("toast"); el.textContent=msg; el.classList.add("show");
+  clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove("show"),2000);
+}
+
+/* ============================== BOOT =================================== */
+async function boot(){
+  renderLove();
+  loadWeather();
+  const ok = await initFirebase();
+  if(!ok){
+    fb.enabled=false;
+    document.getElementById("signin").classList.remove("show");
+    document.getElementById("signinNote").style.display="none";
+    loadLocal();
+  }
+  renderAccount();
+  renderAll();
+}
+boot();
+</script>
+</body>
+</html>
