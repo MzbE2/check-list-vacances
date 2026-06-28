@@ -120,6 +120,8 @@
   .check svg{width:16px;height:16px;opacity:0;transform:scale(.5);transition:.18s;}
   li.item.ready .check svg{opacity:1;transform:scale(1);}
   .itemBody{flex:1;min-width:0;}
+  .itemPic{flex:0 0 auto;font-size:30px;line-height:1;width:40px;text-align:center;margin-top:1px;filter:drop-shadow(0 1px 1px rgba(22,59,83,.12));}
+  li.item.ready .itemPic{opacity:.85;}
   .itemName{font-weight:800;font-size:15.5px;color:var(--ink);word-wrap:break-word;}
   li.item.ready .itemName{color:var(--mint-deep);}
   .itemNote{font-size:12.5px;color:var(--ink-soft);font-weight:600;margin-top:2px;}
@@ -158,6 +160,12 @@
   .emojiRow{display:flex;flex-wrap:wrap;gap:8px;}
   .emojiRow button{width:46px;height:46px;border-radius:12px;background:#fff;border:1.5px solid var(--line);font-size:22px;}
   .emojiRow button.sel{border-color:var(--sea);background:#E9F8FA;transform:scale(1.05);}
+  .picRow{display:flex;align-items:center;gap:12px;margin-bottom:6px;}
+  .picPreview{flex:0 0 auto;width:58px;height:58px;border-radius:16px;background:#fff;border:1.5px solid var(--line);display:grid;place-items:center;font-size:32px;box-shadow:var(--shadow-sm);}
+  .picHint{font-size:12px;color:var(--ink-soft);font-weight:700;}
+  .emojiGrid{display:flex;flex-wrap:wrap;gap:7px;max-height:142px;overflow-y:auto;padding:8px;background:#fff;border:1.5px solid var(--line);border-radius:14px;}
+  .emojiGrid button{width:42px;height:42px;border-radius:11px;background:var(--sand);border:1.5px solid transparent;font-size:21px;}
+  .emojiGrid button.sel{border-color:var(--sea);background:#E9F8FA;transform:scale(1.06);}
   .sheetBtns{display:flex;gap:10px;margin-top:8px;}
   .sheetBtns button{flex:1;padding:14px;border-radius:14px;font-weight:800;font-size:15.5px;}
   .btn-primary{background:var(--sea);color:#fff;box-shadow:0 6px 16px rgba(43,183,196,.35);}
@@ -252,6 +260,14 @@
     <h3 id="itemSheetTitle">✏️ Article</h3>
     <div class="field"><label>Nom de l'article</label><input id="itemName" placeholder="Ex : Crème solaire" /></div>
     <div class="field"><label>Note / quantité (optionnel)</label><input id="itemNote" placeholder="Ex : Haute protection, x2…" /></div>
+    <div class="field">
+      <label>Image (pour les petits qui lisent encore)</label>
+      <div class="picRow">
+        <div class="picPreview" id="itemPicPreview">🧳</div>
+        <div class="picHint">Choisie toute seule selon le nom — ou appuie sur une image ci-dessous.</div>
+      </div>
+      <div class="emojiGrid" id="itemEmojiGrid"></div>
+    </div>
     <div class="sheetBtns">
       <button class="btn-cancel" data-close>Annuler</button>
       <button class="btn-primary" id="itemSave">Enregistrer</button>
@@ -324,41 +340,77 @@ const PALETTE = ["#3FB984","#2BB7C4","#FFC93C","#FF7A6B","#F4A23C","#6C8AE4","#B
 const EMOJIS = ["🎒","🥾","🚲","🏖️","👕","🍽️","💊","📄","⛺","🛶","🎣","🎮","🧴","🐶","👶","🍷","🎸","📷","🧗","🏄","🌊","🔦","🧺","🎲"];
 
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
-function mk(name,note){ return {id:uid(),name,note:note||"",ready:false,by:null}; }
+function mk(name,note,emoji){ return {id:uid(),name,note:note||"",emoji:emoji||guessEmoji(name),ready:false,by:null}; }
+
+// Palette d'images proposée dans la fenêtre d'ajout (reconnaissable par un enfant)
+const ITEM_EMOJIS=["🧳","🎒","👕","👗","🩳","🧦","🧥","👟","🩴","🧢","🕶️","🧴","🪥","🧼","🛏️","🛌","🤿","🛟","⛱️","🏐","🪣","🚲","⛑️","🔧","🔪","🍴","🍽️","🧊","🥤","💧","🍪","🧺","🩹","💊","🦟","📚","🧸","🎠","🪪","🚗","💳","📷","🔌","🦷"];
+
+// Devine une image à partir du nom (du plus précis au plus général)
+const GUESS=[
+  [["sac a dos","cartable"],"🎒"],[["sac de plage","sac plage"],"👜"],[["cabas","courses","panier"],"🛍️"],
+  [["baton"],"🥾"],[["chaussure","basket","sandale","tong"],"👟"],[["gourde","camelbak"],"🥤"],
+  [["casquette","chapeau","bob"],"🧢"],[["creme solaire","solaire","creme"],"🧴"],[["lunette"],"🕶️"],
+  [["porte bebe","porte-bebe","bebe"],"👶"],[["antivol","cadenas"],"🔒"],[["pompe"],"🔧"],
+  [["chambre a air","outil","cle","tournevis"],"🛠️"],[["casque"],"⛑️"],[["velo"],"🚲"],[["trottinette"],"🛴"],
+  [["masque","tuba","plongee"],"🤿"],[["serviette","fouta","drap de bain"],"🧺"],[["maillot","bikini"],"🩳"],
+  [["parasol","tente"],"⛱️"],[["brassard","bouee"],"🛟"],[["seau","pelle","jeux de plage","ballon"],"🏐"],
+  [["drap"],"🛏️"],[["lessive"],"🧼"],[["t-shirt","tshirt","debardeur","tee shirt"],"👕"],
+  [["short","jupe","robe"],"👗"],[["sous vetement","sous-vetement","culotte","slip","chaussette"],"🧦"],
+  [["pull","gilet","veste","sweat","polaire"],"🧥"],[["pyjama"],"🛌"],
+  [["couteau","econome","eplucheur"],"🔪"],[["fourchette","cuillere","couvert"],"🍴"],
+  [["assiette","verre","gobelet","tasse","bol"],"🍽️"],[["glaciere","pain de glace","glace"],"🧊"],
+  [["eponge","vaisselle","liquide"],"🧽"],[["poubelle"],"🗑️"],[["boite","tupperware","hermetique"],"🥡"],
+  [["pansement","tulle"],"🩹"],[["premiers secours","secours","pharmacie"],"🩺"],
+  [["paracetamol","medicament","anti-inflammatoire","doliprane","cachet","comprime"],"💊"],
+  [["moustique","insecte","repulsif"],"🦟"],[["brosse a dent","dentifrice"],"🪥"],
+  [["douche","shampoing","savon","gel"],"🧴"],[["manege","ticket","place"],"🎠"],
+  [["passeport","identite","papiers d'identite"],"🪪"],[["permis","voiture","vehicule","carte grise"],"🚗"],
+  [["vitale","mutuelle","carte bancaire","carte bleue","carte de credit"],"💳"],[["livre","liseuse","bouquin","roman"],"📚"],
+  [["jouet","peluche","doudou"],"🧸"],[["jeu","societe","cartes a jouer","puzzle"],"🎲"],
+  [["telephone","portable","chargeur","cable"],"🔌"],[["appareil photo","photo","camera"],"📷"],
+  [["parapluie"],"☂️"],[["eau","bouteille"],"💧"],[["snack","gouter","biscuit","barre"],"🍪"],
+  [["couche","biberon"],"🍼"],[["sac"],"🛍️"]
+];
+function norm(s){ return (s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,""); }
+function guessEmoji(name){
+  const n=norm(name);
+  for(const [keys,emo] of GUESS){ if(keys.some(k=>n.includes(k))) return emo; }
+  return "🧳";
+}
 
 const SEED = {
   departure:null,
   categories:[
     {id:uid(),emoji:"🥾",color:"#3FB984",name:"Randonnée & Extérieur",items:[
-      mk("Sac à dos rando","Prévu sur le post-it"),mk("Bâton de marche","Prévu sur le post-it"),
-      mk("Chaussures de rando / trail","Essentiel pour les marches"),mk("Gourdes / Camelbak"),
-      mk("Casquette / Chapeau"),mk("Crème solaire","Haute protection"),mk("Lunettes de soleil")]},
+      mk("Sac à dos rando","Prévu sur le post-it","🎒"),mk("Bâton de marche","Prévu sur le post-it","🥾"),
+      mk("Chaussures de rando / trail","Essentiel pour les marches","👟"),mk("Gourdes / Camelbak","","🥤"),
+      mk("Casquette / Chapeau","","🧢"),mk("Crème solaire","Haute protection","🧴"),mk("Lunettes de soleil","","🕶️")]},
     {id:uid(),emoji:"🚲",color:"#2BB7C4",name:"Vélo",items:[
-      mk("Porte-bébé vélo","Prévu sur le post-it"),mk("Antivol vélo","Prévu sur le post-it"),
-      mk("Pompe vélo","+ adaptateur voiture"),mk("Chambre à air + outils vélo","Prévu sur le post-it"),
-      mk("Casque vélo","Prévu sur le post-it"),mk("Vélos","À charger sur le porte-vélo")]},
+      mk("Porte-bébé vélo","Prévu sur le post-it","👶"),mk("Antivol vélo","Prévu sur le post-it","🔒"),
+      mk("Pompe vélo","+ adaptateur voiture","🔧"),mk("Chambre à air + outils vélo","Prévu sur le post-it","🛠️"),
+      mk("Casque vélo","Prévu sur le post-it","⛑️"),mk("Vélos","À charger sur le porte-vélo","🚲")]},
     {id:uid(),emoji:"🏖️",color:"#FFC93C",name:"Plage & Piscine",items:[
-      mk("Masque piscine","Prévu sur le post-it"),mk("Serviettes de piscine & foutas","Prévu sur le post-it"),
-      mk("Maillots de bain","Prévoir plusieurs (6 semaines)"),mk("Sac de plage"),
-      mk("Parasol / Tente de plage"),mk("Jeux de plage / Brassards"),
-      mk("Crème solaire","Haute protection"),mk("Lunettes de soleil")]},
+      mk("Masque piscine","Prévu sur le post-it","🤿"),mk("Serviettes de piscine & foutas","Prévu sur le post-it","🧺"),
+      mk("Maillots de bain","Prévoir plusieurs (6 semaines)","🩳"),mk("Sac de plage","","👜"),
+      mk("Parasol / Tente de plage","","⛱️"),mk("Jeux de plage / Brassards","","🏐"),
+      mk("Crème solaire","Haute protection","🧴"),mk("Lunettes de soleil","","🕶️")]},
     {id:uid(),emoji:"👕",color:"#FF7A6B",name:"Vêtements & Linge",items:[
-      mk("Draps","Prévu sur le post-it"),mk("Un peu de lessive","Recharge / dépannage"),
-      mk("T-shirts / Débardeurs","1 à 2 semaines max (lavage sur place)"),mk("Shorts / Jupes / Robes"),
-      mk("Sous-vêtements & Chaussettes"),mk("Pulls / Gilets","Pour les soirées fraîches"),
-      mk("Pyjamas"),mk("Linge de toilette additionnel")]},
+      mk("Draps","Prévu sur le post-it","🛏️"),mk("Un peu de lessive","Recharge / dépannage","🧼"),
+      mk("T-shirts / Débardeurs","1 à 2 semaines max (lavage sur place)","👕"),mk("Shorts / Jupes / Robes","","👗"),
+      mk("Sous-vêtements & Chaussettes","","🧦"),mk("Pulls / Gilets","Pour les soirées fraîches","🧥"),
+      mk("Pyjamas","","🛌"),mk("Linge de toilette additionnel","","🧖")]},
     {id:uid(),emoji:"🍽️",color:"#F4A23C",name:"Cuisine & Pratique",items:[
-      mk("1 couteau + 1 économe","Cuisine de vacances"),mk("Glacière / Pains de glace"),
-      mk("Sacs poubelle / Éponges / Liquide vaisselle"),mk("Sac cabas pour les courses"),
-      mk("Boîtes hermétiques","Pique-nique")]},
+      mk("1 couteau + 1 économe","Cuisine de vacances","🔪"),mk("Glacière / Pains de glace","","🧊"),
+      mk("Sacs poubelle / Éponges / Liquide vaisselle","","🧽"),mk("Sac cabas pour les courses","","🛍️"),
+      mk("Boîtes hermétiques","Pique-nique","🥡")]},
     {id:uid(),emoji:"💊",color:"#6C8AE4",name:"Pharmacie & Toilette",items:[
-      mk("Tulle gras / Pansements","Prévu sur le post-it"),mk("Trousse de premiers secours","Désinfectant, compresses"),
-      mk("Paracétamol / Anti-inflammatoires"),mk("Anti-moustique","Spray + apaisant"),
-      mk("Brosses à dents & Dentifrice"),mk("Gel douche & Shampoing")]},
+      mk("Tulle gras / Pansements","Prévu sur le post-it","🩹"),mk("Trousse de premiers secours","Désinfectant, compresses","🩺"),
+      mk("Paracétamol / Anti-inflammatoires","","💊"),mk("Anti-moustique","Spray + apaisant","🦟"),
+      mk("Brosses à dents & Dentifrice","","🪥"),mk("Gel douche & Shampoing","","🧴")]},
     {id:uid(),emoji:"📄",color:"#B07BD9",name:"Papiers & Loisirs",items:[
-      mk("Tickets manège Sanary","Prévu sur le post-it"),mk("Cartes d'identité / Passeports","Vérifier la validité"),
-      mk("Permis & Papiers du véhicule"),mk("Cartes vitale & Mutuelle"),
-      mk("Livres / Liseuse / Jeux de société")]}
+      mk("Tickets manège Sanary","Prévu sur le post-it","🎠"),mk("Cartes d'identité / Passeports","Vérifier la validité","🪪"),
+      mk("Permis & Papiers du véhicule","","🚗"),mk("Cartes vitale & Mutuelle","","💳"),
+      mk("Livres / Liseuse / Jeux de société","","📚")]}
   ]
 };
 
@@ -379,9 +431,14 @@ function clone(o){ return JSON.parse(JSON.stringify(o)); }
 function lsGet(k){ try{return localStorage.getItem(k);}catch(e){return null;} }
 function lsSet(k,v){ try{localStorage.setItem(k,v);}catch(e){} }
 
+function migrate(s){
+  if(!s || !s.categories) return s;
+  s.categories.forEach(c=>{ (c.items||[]).forEach(it=>{ if(!it.emoji) it.emoji = guessEmoji(it.name); }); });
+  return s;
+}
 function loadLocal(){
   const raw = lsGet("checklist-vacances");
-  if(raw){ try{ state = JSON.parse(raw); }catch(e){} }
+  if(raw){ try{ state = migrate(JSON.parse(raw)); }catch(e){} }
 }
 function persist(){
   clearTimeout(saveTimer);
@@ -417,7 +474,7 @@ async function initFirebase(){
     // Sync temps réel
     db.onValue(fb.ref, (snap)=>{
       const v = snap.val();
-      if(v && v.categories){ state = v; renderAll(); }
+      if(v && v.categories){ state = migrate(v); renderAll(); }
       else if(user){ fb.set(fb.ref, state).catch(()=>{}); } // 1ère fois : on pousse le seed
     });
 
@@ -564,6 +621,7 @@ function renderMain(){
       <button class="check" aria-label="Prêt">
         <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
       </button>
+      <div class="itemPic">${it.emoji||"🧳"}</div>
       <div class="itemBody">
         <div class="itemName">${esc(it.name)}</div>
         ${it.note?`<div class="itemNote">${esc(it.note)}</div>`:""}
@@ -616,22 +674,43 @@ function delItem(catId,itemId){
 }
 
 /* Modale article */
-let itemCtx = {catId:null, item:null};
+let itemCtx = {catId:null, item:null, emoji:"🧳", manual:false};
+function buildItemGrid(){
+  const grid = document.getElementById("itemEmojiGrid");
+  grid.innerHTML = "";
+  ITEM_EMOJIS.forEach(e=>{
+    const b = document.createElement("button"); b.textContent = e;
+    b.onclick = ()=>{ itemCtx.emoji=e; itemCtx.manual=true; refreshItemPic(); };
+    grid.appendChild(b);
+  });
+}
+function refreshItemPic(){
+  document.getElementById("itemPicPreview").textContent = itemCtx.emoji;
+  [...document.getElementById("itemEmojiGrid").children].forEach(b=>b.classList.toggle("sel", b.textContent===itemCtx.emoji));
+}
 function openItem(catId, item){
-  itemCtx = {catId, item};
+  itemCtx = {catId, item, emoji: item? (item.emoji||guessEmoji(item.name)) : "🧳", manual: !!item};
   document.getElementById("itemSheetTitle").textContent = item? "✏️ Modifier l'article" : "➕ Nouvel article";
   document.getElementById("itemName").value = item? item.name : "";
   document.getElementById("itemNote").value = item? (item.note||"") : "";
+  buildItemGrid(); refreshItemPic();
   showOverlay("itemOverlay");
   setTimeout(()=>document.getElementById("itemName").focus(),200);
 }
+// Suggestion automatique de l'image tant qu'on n'a pas choisi à la main
+document.getElementById("itemName").addEventListener("input", e=>{
+  if(itemCtx.manual) return;
+  const v = e.target.value.trim();
+  itemCtx.emoji = v? guessEmoji(v) : "🧳";
+  refreshItemPic();
+});
 document.getElementById("itemSave").onclick = ()=>{
   const name = document.getElementById("itemName").value.trim();
   if(!name){ toast("Donne un nom à l'article"); return; }
   const note = document.getElementById("itemNote").value.trim();
   const c = state.categories.find(x=>x.id===itemCtx.catId); if(!c) return;
-  if(itemCtx.item){ itemCtx.item.name=name; itemCtx.item.note=note; }
-  else { c.items.push(mk(name,note)); }
+  if(itemCtx.item){ itemCtx.item.name=name; itemCtx.item.note=note; itemCtx.item.emoji=itemCtx.emoji; }
+  else { c.items.push(mk(name,note,itemCtx.emoji)); }
   persist(); hideOverlay(); renderAll();
 };
 
