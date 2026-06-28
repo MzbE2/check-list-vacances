@@ -431,10 +431,32 @@ function clone(o){ return JSON.parse(JSON.stringify(o)); }
 function lsGet(k){ try{return localStorage.getItem(k);}catch(e){return null;} }
 function lsSet(k,v){ try{localStorage.setItem(k,v);}catch(e){} }
 
+// Firebase peut renvoyer les tableaux sous forme d'objets {0:..,1:..} et supprime
+// les tableaux vides : on remet tout en forme pour éviter tout plantage d'affichage.
+function toArr(x){
+  if(Array.isArray(x)) return x.filter(v=>v!=null);
+  if(x && typeof x==="object") return Object.keys(x).sort((a,b)=>(+a)-(+b)).map(k=>x[k]).filter(v=>v!=null);
+  return [];
+}
 function migrate(s){
-  if(!s || !s.categories) return s;
-  s.categories.forEach(c=>{ (c.items||[]).forEach(it=>{ if(!it.emoji) it.emoji = guessEmoji(it.name); }); });
-  return s;
+  if(!s || typeof s!=="object") return clone(SEED);
+  const out = { departure: s.departure || null, categories: [] };
+  out.categories = toArr(s.categories).map(c=>({
+    id: c.id || uid(),
+    name: c.name || "Onglet",
+    emoji: c.emoji || "🎒",
+    color: c.color || PALETTE[0],
+    items: toArr(c.items).map(it=>({
+      id: it.id || uid(),
+      name: it.name || "",
+      note: it.note || "",
+      emoji: it.emoji || guessEmoji(it.name || ""),
+      ready: !!it.ready,
+      by: it.by || null
+    }))
+  }));
+  if(!out.categories.length) return clone(SEED);
+  return out;
 }
 function loadLocal(){
   const raw = lsGet("checklist-vacances");
@@ -473,9 +495,11 @@ async function initFirebase(){
 
     // Sync temps réel
     db.onValue(fb.ref, (snap)=>{
-      const v = snap.val();
-      if(v && v.categories){ state = migrate(v); renderAll(); }
-      else if(user){ fb.set(fb.ref, state).catch(()=>{}); } // 1ère fois : on pousse le seed
+      try{
+        const v = snap.val();
+        if(v && (v.categories)){ state = migrate(v); renderAll(); }
+        else if(user){ fb.set(fb.ref, state).catch(()=>{}); } // 1ère fois : on pousse le seed
+      }catch(e){ console.warn("render sync:",e); }
     });
 
     // État de connexion
@@ -521,8 +545,8 @@ let activeCat = state.categories[0] ? state.categories[0].id : null;
 let onlyTodo = false;
 let searchQ = "";
 
-function catProgress(c){ const t=c.items.length, d=c.items.filter(i=>i.ready).length; return {t,d}; }
-function globalProgress(){ let t=0,d=0; state.categories.forEach(c=>{t+=c.items.length; d+=c.items.filter(i=>i.ready).length;}); return {t,d}; }
+function catProgress(c){ const it=c.items||[]; return {t:it.length, d:it.filter(i=>i.ready).length}; }
+function globalProgress(){ let t=0,d=0; (state.categories||[]).forEach(c=>{const it=c.items||[]; t+=it.length; d+=it.filter(i=>i.ready).length;}); return {t,d}; }
 
 function renderAccount(){
   const el = document.getElementById("acct");
